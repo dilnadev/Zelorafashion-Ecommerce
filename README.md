@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Store
 
-## Getting Started
+A production-grade e-commerce platform built with Next.js 14 (App Router), TypeScript, Tailwind CSS, Framer Motion, Supabase (Auth + Database + Storage), and Razorpay for payments.
 
-First, run the development server:
+## Prerequisites
+
+- Node.js 18+ and npm
+- A [Supabase](https://supabase.com) project
+- A [Razorpay](https://razorpay.com) account (test mode is fine)
+
+## Getting started
+
+```bash
+npm install
+cp .env.example .env.local
+```
+
+Fill in `.env.local`:
+
+| Variable | Where to find it |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase Dashboard → Project Settings → API |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase Dashboard → Project Settings → API |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase Dashboard → Project Settings → API (server-only, never expose to the client) |
+| `NEXT_PUBLIC_RAZORPAY_KEY_ID` / `RAZORPAY_KEY_ID` | Razorpay Dashboard → Settings → API Keys |
+| `RAZORPAY_KEY_SECRET` | Razorpay Dashboard → Settings → API Keys (server-only) |
+| `RAZORPAY_WEBHOOK_SECRET` | Razorpay Dashboard → Settings → Webhooks (set when the webhook endpoint is created) |
+
+**Never commit `.env.local`** — it's already listed in `.gitignore`.
+
+## Database setup
+
+1. Open your Supabase project's **SQL Editor**.
+2. Paste the contents of `supabase/migrations/20260924000000_init_schema.sql` and run it.
+3. Verify: 20 tables exist, each has RLS enabled (shield icon), and the `product-images`, `brand-assets`, `media-library`, `avatars` storage buckets are present under **Storage**.
+
+## Running the dev server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit [http://localhost:3000](http://localhost:3000) for the placeholder homepage, or [http://localhost:3000/dev/ui-preview](http://localhost:3000/dev/ui-preview) to see every design-system component and its animation.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/                       Next.js App Router routes
+  dev/ui-preview/          Design system smoke-test page (remove before launch)
+components/
+  ui/                      Reusable primitives: Button, Input, Modal, Toast, Skeleton
+  providers/               AuthProvider, ToastProvider
+  storefront/               (added in a later phase)
+  admin/                     (added in a later phase)
+lib/
+  supabase/                Browser, server, and admin Supabase clients
+  utils.ts                 cn, formatCurrency, slugify, formatDate, truncate
+types/
+  database.ts              Hand-written Supabase Database type (regenerate later via `supabase gen types typescript`)
+  index.ts                 Domain types (Product, Order, etc.)
+supabase/migrations/        SQL migration(s)
+middleware.ts               Refreshes the Supabase auth session cookie
+```
 
-## Learn More
+## Design system reference
 
-To learn more about Next.js, take a look at the following resources:
+Typography, color, spacing, and animation rules live in `docs/informations.md` (Section 1). Design tokens are implemented in `tailwind.config.ts`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Build roadmap
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This project is being built in phases, following the spec's step order:
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [x] 1. Initialize Next.js 14 + TypeScript + Tailwind + Framer Motion
+- [x] 2. Supabase client + auth provider
+- [x] 3. Database schema (SQL migration)
+- [x] 4. Design system primitives (Button, Input, Modal, Toast, Skeleton)
+- [ ] 5. Storefront layout (Header, Footer, Cart Drawer)
+- [ ] 6. Homepage
+- [ ] 7. Product Listing Page
+- [ ] 8. Product Detail Page
+- [ ] 9. Cart, checkout, Razorpay integration
+- [ ] 10. User account pages
+- [ ] 11. Admin layout + dashboard
+- [ ] 12. Admin product management
+- [ ] 13. Admin order management
+- [ ] 14. Admin settings, SEO, brand management
+- [ ] 15. Remaining admin pages (customers, coupons, media, analytics)
+- [ ] 16. Search
+- [ ] 17. Final polish (loading/error/empty states, 404 page)
