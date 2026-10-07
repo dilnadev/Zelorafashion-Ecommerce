@@ -10,7 +10,7 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
   if (categories.length === 0) return null;
 
   return (
-    <section className="mx-auto max-w-content px-6 py-20 md:px-16 md:py-30">
+    <section className="mx-auto max-w-content px-6 pt-20 md:px-16 md:pt-30">
       <motion.h2
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
